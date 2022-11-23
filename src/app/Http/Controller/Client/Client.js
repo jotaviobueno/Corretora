@@ -27,6 +27,15 @@ class ClientController {
 
 		return res.status(returnMessage.statuscode).json(returnMessage.message);
 	}
+
+	async outherProfile (req, res) {
+		const {session_id} = req.headers;
+		let username = req.params.username.replace(" ", "");
+
+		const returnMessage = await ClientServices.outherProfile(session_id, username);
+
+		return res.status(returnMessage.statuscode).json(returnMessage.message);
+	}
 }
 
 export default new ClientController;

@@ -8,3 +8,4 @@ import AuthLoginController from "../../app/Http/Controller/Client/AuthLogin.js";
 clientRoutes.post("/sign-up", ClientController.storageNewClient );
 clientRoutes.post("/sign-in", AuthLoginController.createSession );
 clientRoutes.get("/profile", ClientController.profile );
+clientRoutes.get("/user/:username", ClientController.outherProfile );

@@ -38,13 +38,12 @@ class ClientServices {
 		let session;
 
 		if (!( session = await AuthLoginRepository.existSession(session_id) ))
-			return;
+			return { statuscode: 422, message: { error: "session id is invalid" } };
 
 		let client;
 
 		if ((client = await ClientRepository.findClientById(session.client_id))) {
 			return { statuscode: 200, message: { 
-				success: "account create.",
 				profile: {
 					full_name: client.full_name,
 					username: client.username,
@@ -68,6 +67,40 @@ class ClientServices {
 		}
 		
 		return { statuscode: 400, message: { error: "profile display failure." } };
+	}
+
+	async outherProfile(session_id, username) {
+
+		let session;
+
+		if (!( session = await AuthLoginRepository.existSession(session_id) ))
+			return { statuscode: 422, message: { error: "session id is invalid" } };
+
+		if (!(await ClientRepository.findClientById(session.client_id)))
+			return { statuscode: 200, message: { error: "your account has problems" } };
+
+
+		let outherProfile;
+		
+		if ((outherProfile = await ClientRepository.existUsername(username)))
+			return { statuscode: 200, message: { 
+				profile: {
+					full_name: outherProfile.full_name,
+					username: outherProfile.username,
+					email: outherProfile.email,
+					email_verified: outherProfile.email_verified,
+					active: outherProfile.active,
+					avatar_url: outherProfile.avatar_url,
+					genre: outherProfile.genre,
+					birth_date: outherProfile.birth_date,
+					cpf: outherProfile.cpf,
+					resident_country: outherProfile.resident_country,
+					created_at: outherProfile.created_at,
+					last_update: outherProfile.updated_at
+				}
+			}};
+	
+		return { statuscode: 400, message: { error: "username is invalid." } };
 	}
 }
 
