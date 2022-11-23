@@ -36,6 +36,20 @@ class WalletServices {
 			return false;
 		} 
 	}
+
+	async getBalance (client_id) {
+		try {
+
+			const {data} = await axios.post(`${storage.finance_uri}/balance`, {
+				body: { token: generationJWT(client_id).toString()}
+			});	
+
+			return data;
+
+		} catch (e) {
+			return false;
+		}
+	}
 }
 
 export default new WalletServices;

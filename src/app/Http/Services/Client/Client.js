@@ -1,6 +1,7 @@
 import ClientRepository from "../../Repositories/Client/Client.js";
+import AuthLoginRepository from "../../Repositories/Client/AuthLogin.js";
 
-import WalletServices from "../Finance/Wallet.js";
+import FinanceServices from "../Finance/Wallet.js";
 
 class ClientServices {
 
@@ -19,7 +20,7 @@ class ClientServices {
 
 		if (( clientStored = await ClientRepository.storageClient(client) )) {
 
-			if ( await WalletServices.createWallet(clientStored._id )) {
+			if ( await FinanceServices.createWallet(clientStored._id )) {
 				
 				await ClientRepository.addLog(clientStored._id, "CREATED_WALLET", "user wallet has been successfully created");
 
@@ -30,6 +31,43 @@ class ClientServices {
 		}
 
 		return { statuscode: 400, message: { error: "failed when trying to create your account." } };
+	}
+
+	async profile(session_id) {
+		
+		let session;
+
+		if (!( session = await AuthLoginRepository.existSession(session_id) ))
+			return;
+
+		let client;
+
+		if ((client = await ClientRepository.findClientById(session.client_id))) {
+			return { statuscode: 200, message: { 
+				success: "account create.",
+				profile: {
+					full_name: client.full_name,
+					username: client.username,
+					email: client.email,
+					email_verified: client.email_verified,
+					active: client.active,
+					avatar_url: client.avatar_url,
+					genre: client.genre,
+					birth_date: client.birth_date,
+					cpf: client.cpf,
+					resident_country: client.resident_country,
+					created_at: client.created_at,
+					last_update: client.updated_at
+				},
+				wallet: {
+					wallet_id: client.wallet_id,
+					balance: await FinanceServices.getBalance(client._id)
+				}
+	
+			}};
+		}
+		
+		return { statuscode: 400, message: { error: "profile display failure." } };
 	}
 }
 

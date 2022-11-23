@@ -1,6 +1,6 @@
 import cors from "cors";
 
-import { clientRoutes } from "../Routes/Client.js";
+import { clientRoutes } from "../Routes/Client/Client.js";
 
 export default function Application (app, express) {
 	

@@ -11,7 +11,7 @@ class ClientController {
 			avatar_url: req.body.avatar_url ?? "",
 			genre: req.body.genre,
 			birth_date: new Date(req.body.birth_date),
-			cpf: Number(req.body.cpf),
+			cpf: req.body.cpf,
 			resident_country: req.body.resident_country.toUpperCase(),
 		};
 
@@ -20,6 +20,13 @@ class ClientController {
 		return res.status(returnMessage.statuscode).json(returnMessage.message);
 	}
 
+	async profile (req, res) {
+		const {session_id} = req.headers;
+
+		const returnMessage = await ClientServices.profile(session_id);
+
+		return res.status(returnMessage.statuscode).json(returnMessage.message);
+	}
 }
 
 export default new ClientController;

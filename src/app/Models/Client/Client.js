@@ -14,7 +14,7 @@ const Client = new Schema({
 	wallet_id: { type: String },
 	genre: { type: String, required: true },
 	birth_date: { type: Date, required: true },
-	cpf: { type: Number, required: false },
+	cpf: { type: String, required: false },
 	resident_country: { type: String, required: true },
 	permissions: { type: Array, required: true },
 	created_at: { type: Date, default: Date.now, required: true },
