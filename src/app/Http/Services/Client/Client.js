@@ -79,7 +79,6 @@ class ClientServices {
 		if (!(await ClientRepository.findClientById(session.client_id)))
 			return { statuscode: 200, message: { error: "your account has problems" } };
 
-
 		let outherProfile;
 		
 		if ((outherProfile = await ClientRepository.existUsername(username)))
