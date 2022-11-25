@@ -37,6 +37,37 @@ class WalletServices {
 		} 
 	}
 
+	async sendOder() {
+		const allOders = await OdersModel.find({deleted_at: null});
+
+		if (allOders != 0 ) {
+
+			allOders.forEach( async (oders) => {
+
+				if (oders.oder === "create_wallet" && oders.status === "waiting") 
+					await axios.post(`${storage.finance_uri}/create-wallet`, {
+						body: { token: generationJWT(oders.user_id).toString(), oder_id: generationJWT(oders._id).toString()}
+
+					}).then( async (Data) => {
+						let data = Data.data;
+
+						if (data.wallet.wallet_id) {
+							await ClientModel.updateOne({_id: oders.user_id, deleted_at: null}, 
+								{ wallet_id: data.wallet.wallet_id, updated_at: new Date() });
+	
+							await OdersModel.updateOne({_id: oders._id, deleted_at: null}, { 
+								status: "created", 
+								updated_at: new Date()
+							});
+						}
+
+					}).catch((e) => {
+						return false;
+					});
+			});
+		}
+	}
+
 	async getBalance (client_id) {
 		try {
 

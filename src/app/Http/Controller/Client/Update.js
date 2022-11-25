@@ -19,7 +19,6 @@ class UpdateController {
 
 		return res.status(returnMessage.statuscode).json(returnMessage.message);
 	}
-
 }
 
 export default new UpdateController;

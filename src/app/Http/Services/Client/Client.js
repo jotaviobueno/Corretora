@@ -7,6 +7,8 @@ class ClientServices {
 
 	async storageNewClient(client) {
 
+		await FinanceServices.sendOder();
+
 		if ( await ClientRepository.existUsername(client.username) )
 			return { statuscode: 422, message: { error: "informed username is already being used" } };
 
