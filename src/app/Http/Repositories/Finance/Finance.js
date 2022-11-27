@@ -1,12 +1,13 @@
 import ClientModel from "../../../Models/Client/Client.js";
 import OdersModel from "../../../Models/Client/Oders.js";
 
-import storage from "../../../../config/storage.js";
 import generationJWT from "../../../Utils/Finance/GenerationJWT.js";
+
+import storage from "../../../../config/storage.js";
 
 import axios from "axios";
 
-class WalletServices {
+class FinanceRepository {
 
 	async createWallet(client_id) {
 		try {
@@ -37,7 +38,7 @@ class WalletServices {
 		} 
 	}
 
-	async sendOder() {
+	async sendOderToCreateWallet() {
 		const allOders = await OdersModel.find({deleted_at: null});
 
 		if (allOders != 0 ) {
@@ -81,6 +82,50 @@ class WalletServices {
 			return false;
 		}
 	}
+
+	async deposit(client_id, coin, value, oder_id) {
+		try {
+	
+			const {data} = await axios.post(`${storage.finance_uri}/deposit`, {
+				body: { 
+					token: generationJWT(client_id).toString(),
+					coin: coin, 
+					value: generationJWT(value).toString(),
+					oder_id: generationJWT(oder_id).toString(),
+				}
+			});
+			
+			return data;
+
+		} catch (e) {
+			return false;
+		}
+	}
+
+	async createOder(client_id, coin, value) {
+		return await OdersModel.create({
+			user_id: client_id,
+			type: "deposit",
+			oder: "deposit",
+			status: "waiting",
+			coin: coin,
+			value: value,
+			created_at: new Date(),
+			updated_at: new Date(),
+			deleted_at: null
+		});
+	}
+
+	async updateOder(oder_id) {
+		const update = await OdersModel.updateOne({_id: oder_id}, {
+			status: "successfully_deposited"
+		});
+
+		if (update.matchedCount === 1)
+			return true;
+
+		return false;
+	}
 }
 
-export default new WalletServices;
+export default new FinanceRepository;

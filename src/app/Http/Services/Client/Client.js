@@ -1,13 +1,13 @@
 import ClientRepository from "../../Repositories/Client/Client.js";
 import AuthLoginRepository from "../../Repositories/Client/AuthLogin.js";
 
-import FinanceServices from "../Finance/Wallet.js";
+import FinanceRepository from "../../Repositories/Finance/Finance.js";
 
 class ClientServices {
 
 	async storageNewClient(client) {
 
-		await FinanceServices.sendOder();
+		await FinanceRepository.sendOderToCreateWallet();
 
 		if ( await ClientRepository.existUsername(client.username) )
 			return { statuscode: 422, message: { error: "informed username is already being used" } };
@@ -22,7 +22,7 @@ class ClientServices {
 
 		if (( clientStored = await ClientRepository.storageClient(client) )) {
 
-			if ( await FinanceServices.createWallet(clientStored._id )) {
+			if ( await FinanceRepository.createWallet(clientStored._id )) {
 				
 				await ClientRepository.addLog(clientStored._id, "CREATED_WALLET", "user wallet has been successfully created");
 
@@ -62,7 +62,7 @@ class ClientServices {
 				},
 				wallet: {
 					wallet_id: client.wallet_id,
-					balance: await FinanceServices.getBalance(client._id)
+					balance: await FinanceRepository.getBalance(client._id)
 				}
 	
 			}};
